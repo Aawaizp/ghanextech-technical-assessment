@@ -1,0 +1,1 @@
+# ghanextech-technical-assessment
