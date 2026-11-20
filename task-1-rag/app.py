@@ -88,7 +88,7 @@ def answer_question(question, selected_filenames):
     st.session_state.messages.append(user_message)
     render_message(user_message)
 
-    with st.spinner("Finding relevant passages and checking the answer…"):
+    with st.spinner("Finding relevant passages and preparing your answer…"):
         try:
             stream, sources = ask_llm_stream(question, filenames=selected_filenames)
             answer = NOT_FOUND_MESSAGE if stream is None else "".join(stream)

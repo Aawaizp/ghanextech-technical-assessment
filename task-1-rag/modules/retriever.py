@@ -1,12 +1,15 @@
+import logging
+import math
 import os
 
+from chromadb.errors import InternalError
 from langchain_core.documents import Document
 
 from config import TOP_K
 from modules.vector_store import get_vector_store
 
 SCORE_THRESHOLD = 0.35
-SUMMARY_K = 8
+_LOGGER = logging.getLogger(__name__)
 
 SUMMARY_KEYWORDS = (
     "summarize", "summary", "key points", "main points",
@@ -32,7 +35,7 @@ def _is_summary_query(query: str) -> bool:
     return any(kw in q for kw in SUMMARY_KEYWORDS)
 
 
-def _get_summary_chunks(filenames, k=SUMMARY_K):
+def _get_summary_chunks(filenames, k):
     db = get_vector_store()
     where = _build_filename_filter(filenames)
 
@@ -48,13 +51,15 @@ def _get_summary_chunks(filenames, k=SUMMARY_K):
     for fname in by_file:
         by_file[fname].sort(key=lambda item: item[0].get("chunk_index", 0))
 
-    files = list(by_file.keys()) or ["unknown"]
-    per_file = max(1, k // len(files))
+    files = sorted(by_file)
+    if not files:
+        return []
+    per_file, remainder = divmod(k, len(files))
 
     results = []
-    for fname in files:
-        passages = by_file.get(fname, [])
-        count = min(per_file, len(passages))
+    for file_index, fname in enumerate(files):
+        passages = by_file[fname]
+        count = min(per_file + (file_index < remainder), len(passages))
         indices = (
             [round(i * (len(passages) - 1) / (count - 1)) for i in range(count)]
             if count > 1 else list(range(count))
@@ -66,6 +71,31 @@ def _get_summary_chunks(filenames, k=SUMMARY_K):
     return results
 
 
+def _exact_cosine_search(db, query, k, where):
+    """Recover from Chroma's HNSW ID error without widening the file scope."""
+    data = db.get(where=where, include=["documents", "metadatas", "embeddings"])
+    if not data["ids"]:
+        return []
+    query_vector = db.embeddings.embed_query(query)
+    query_norm = math.sqrt(sum(value * value for value in query_vector))
+    if not query_norm:
+        return []
+
+    ranked = []
+    for text, metadata, vector in zip(
+        data["documents"], data["metadatas"], data["embeddings"], strict=True
+    ):
+        norm = math.sqrt(sum(float(value) ** 2 for value in vector))
+        if not norm:
+            continue
+        score = sum(
+            float(a) * float(b) for a, b in zip(query_vector, vector, strict=True)
+        ) / (query_norm * norm)
+        ranked.append((Document(page_content=text, metadata=metadata), score))
+    ranked.sort(key=lambda item: item[1], reverse=True)
+    return ranked[:k]
+
+
 def retrieve_documents(
     query: str,
     k: int | None = None,
@@ -74,9 +104,11 @@ def retrieve_documents(
 ):
     if k is None:
         k = TOP_K
+    if k < 1 or not query.strip() or filenames == []:
+        return []
 
     if _is_summary_query(query):
-        docs = _get_summary_chunks(filenames, k=SUMMARY_K)
+        docs = _get_summary_chunks(filenames, k=k)
         if DEBUG:
             print(f"[retrieval:summary] {len(docs)} chunks | filter={filenames or 'ALL'}")
         return docs
@@ -84,9 +116,15 @@ def retrieve_documents(
     db = get_vector_store()
     where_filter = _build_filename_filter(filenames)
 
-    results = db.similarity_search_with_relevance_scores(
-        query=query, k=k, filter=where_filter,
-    )
+    try:
+        results = db.similarity_search_with_relevance_scores(
+            query=query, k=k, filter=where_filter,
+        )
+    except InternalError as exc:
+        if "Error finding id" not in str(exc):
+            raise
+        _LOGGER.warning("Chroma ID lookup failed; using exact cosine search for this request.")
+        results = _exact_cosine_search(db, query, k, where_filter)
 
     filtered_results = [(doc, score) for doc, score in results if score >= score_threshold]
 

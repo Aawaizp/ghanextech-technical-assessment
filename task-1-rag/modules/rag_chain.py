@@ -49,6 +49,8 @@ QUESTION:
 {question}
 
 ANSWER:"""
+
+
 def ask_llm_stream(question: str, filenames: list[str] | None = None):
     """
     Retrieve passages and return a buffered, citation-checked answer iterator.
@@ -70,12 +72,12 @@ def ask_llm_stream(question: str, filenames: list[str] | None = None):
         return None, []
 
     context = "\n\n".join(
-    f"[{number}] "
-    f"Document: {doc.metadata['filename']} | "
-    f"Page: {doc.metadata['page'] + 1}\n"
-    f"{doc.page_content}"
-    for number, doc in enumerate(docs, start=1)
-)
+        f"[{number}] "
+        f"Document: {doc.metadata['filename']} | "
+        f"Page: {doc.metadata['page'] + 1}\n"
+        f"{doc.page_content}"
+        for number, doc in enumerate(docs, start=1)
+    )
     prompt = _build_prompt(question, context)
 
     last_error = None

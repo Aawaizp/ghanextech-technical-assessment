@@ -43,6 +43,7 @@ SESSION_APP = """
 import hashlib
 import streamlit as st
 from langchain_core.documents import Document
+from modules.retriever import retrieve_documents
 from modules.vector_store import (
     initialize_document_session, get_vector_store, list_indexed_filenames,
     store_documents, delete_file, clear_document_session,
@@ -70,11 +71,11 @@ if st.session_state["visible_files"]:
     db = get_vector_store()
     st.session_state["visible_texts"] = db.get(include=["documents"])["documents"]
     st.session_state["search_texts"] = [
-        d.page_content for d in db.similarity_search("alpha beta", k=1)
+        d.page_content for d in retrieve_documents("alpha beta", k=1, score_threshold=0)
     ]
     st.session_state["filtered_texts"] = [
-        d.page_content for d in db.similarity_search(
-            "alpha beta", k=1, filter={"filename": "same.pdf"}
+        d.page_content for d in retrieve_documents(
+            "alpha beta", k=1, score_threshold=0, filenames=["same.pdf"]
         )
     ]
 """

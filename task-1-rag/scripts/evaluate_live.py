@@ -1,12 +1,10 @@
 """Small live evaluation using synthetic PDFs, real MiniLM, Chroma and Groq."""
-import os
-os.environ["HF_HUB_OFFLINE"] = "1"
-os.environ["TRANSFORMERS_OFFLINE"] = "1"
+import json
 from pathlib import Path
 import sys
 from types import SimpleNamespace
 from unittest.mock import patch
-import json
+
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT))
 sys.path.insert(0, str(PROJECT / "tests"))
