@@ -1,0 +1,65 @@
+/* Reserve space for Streamlit's fixed toolbar, including when the browser is zoomed. */
+:root { --ghanex-toolbar-offset: 4.5rem; }
+[data-testid="stMainBlockContainer"] { max-width: 880px; padding: calc(var(--ghanex-toolbar-offset) + .75rem) 2rem 4.5rem; }
+[data-testid="stSidebar"] { border-right: 1px solid rgba(128,128,128,.16); }
+[data-testid="stSidebarUserContent"] { padding: .5rem 1rem 1rem; }
+[data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: .55rem; }
+.st-key-sidebar_controls { background: transparent; padding-bottom: .15rem; }
+/* Natural height for a few chats; only the history list scrolls when it grows. */
+.st-key-history_list { max-height: min(38dvh, 18rem); overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-width: thin; padding: .15rem .15rem .6rem; }
+[data-testid="stSidebarHeader"] { margin-bottom: 0; }
+[data-testid="stSidebar"] button { min-height: 2.3rem; padding: .4rem .65rem; }
+[data-testid="stSidebar"] button p { font-size: .84rem; }
+[data-testid="stSidebar"] input { font-size: .83rem; }
+[data-testid="stSidebar"] button > div { min-width: 0; }
+.st-key-history_list [data-testid="stMarkdownContainer"] { min-width: 0; overflow: hidden; }
+.st-key-history_list button { justify-content: flex-start; }
+.sidebar-brand { display: flex; align-items: center; gap: .6rem; font-size: 1.25rem; font-weight: 700; letter-spacing: -.04em; padding: .2rem 0 .65rem; }
+.brand-symbol { display: inline-grid; place-items: center; width: 34px; height: 34px; background: #163c35; color: #fff; border-radius: 10px; font-size: 1.05rem; }
+.brand-tag { font-size: .6rem; opacity: .7; letter-spacing: .12em; margin-left: auto; }
+.sidebar-label { font-size: .65rem; letter-spacing: .12em; opacity: .7; margin: .65rem 0 .15rem; font-weight: 600; }
+[data-testid="stSidebar"] button[kind="primary"] { background: rgba(107,150,137,.2); color: inherit; border: 1px solid rgba(107,150,137,.4); box-shadow: inset 3px 0 #608b7d; }
+[data-testid="stSidebar"] button p { text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] { font-size: .73rem; line-height: 1.4; }
+.st-key-chat_header { position: sticky; top: var(--ghanex-toolbar-offset); z-index: 10; background: var(--background-color, Canvas); border-bottom: 1px solid rgba(128,128,128,.15); padding: .45rem 0 .65rem; margin-bottom: 1.1rem; }
+.st-key-chat_header [data-testid="stVerticalBlock"] { gap: .15rem; }
+.st-key-chat_header [data-testid="stCaptionContainer"] p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; margin: 0; }
+.chat-brand { font-size: 1.2rem; font-weight: 700; letter-spacing: -.035em; }
+.chat-brand span { font-size: .58rem; font-weight: 500; opacity: .65; margin-left: .65rem; letter-spacing: .1em; }
+.welcome { text-align: center; padding: clamp(1.2rem, 5vh, 3rem) 0 1.8rem; }
+.welcome-mark { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; background: #163c35; color: white; font-size: 1.65rem; font-weight: 600; margin: 0 auto 1.3rem; box-shadow: 0 6px 24px rgba(22,60,53,.12); }
+.welcome-eyebrow { font-size: .59rem; letter-spacing: .12em; opacity: .65; margin-bottom: .8rem; }
+.welcome h1 { font-family: inherit; font-weight: 600; font-size: clamp(1.8rem, 4vw, 2.4rem); letter-spacing: -.05em; padding: 0; }
+.welcome p { opacity: .7; font-size: .9rem; margin: .8rem 0 1.5rem; }
+.capabilities { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .65rem; max-width: 520px; margin: auto; text-align: left; }
+.capabilities > div { padding: .85rem 1rem; border: 1px solid rgba(128,128,128,.2); border-radius: 12px; background: rgba(128,128,128,.025); }
+.capabilities b { font-size: .82rem; font-weight: 600; display: block; margin-bottom: .2rem; }
+.capabilities span { font-size: .72rem; opacity: .7; }
+[data-testid="stChatMessage"] { background: transparent; border-radius: 1.2rem; padding: .8rem 0; gap: .75rem; }
+[data-testid="stChatMessage"]:has([data-testid="stChatMessageAvatarUser"]) { background: var(--secondary-background-color, rgba(128,128,128,.09)); padding: .8rem 1rem; margin-left: auto; width: fit-content; max-width: 88%; }
+[data-testid="stChatMessageAvatarUser"] { display: none; }
+[data-testid="stChatMessageAvatarAssistant"] { background: transparent; color: inherit; }
+[data-testid="stChatMessage"] p { line-height: 1.65; overflow-wrap: anywhere; }
+[data-testid="stChatMessage"] [data-testid="stExpander"] { border: 0; background: transparent; }
+[data-testid="stChatMessage"] [data-testid="stExpander"] summary { font-size: .8rem; opacity: .8; padding-left: 0; }
+[data-testid="stBottomBlockContainer"] { max-width: 880px; padding-left: 2rem; padding-right: 2rem; }
+[data-testid="stChatInput"] { border-radius: 1.35rem; border: 1px solid rgba(128,128,128,.25); box-shadow: 0 3px 18px rgba(0,0,0,.035); }
+[data-testid="stChatInput"] textarea { min-height: 3rem; }
+[data-testid="stButton"] button, [data-testid="stLinkButton"] a { border-radius: .65rem; }
+@media (max-width: 640px) {
+  [data-testid="stMainBlockContainer"] { padding: calc(var(--ghanex-toolbar-offset) + .5rem) 1rem 4rem; }
+  [data-testid="stBottomBlockContainer"] { padding-left: 1rem; padding-right: 1rem; }
+  .chat-brand span { display: none; }
+  .welcome { padding-top: 1rem; }
+  .welcome-eyebrow { font-size: .5rem; letter-spacing: .06em; }
+  .capabilities { gap: .45rem; }
+  .capabilities > div { padding: .7rem; }
+  [data-testid="stChatMessage"] { gap: .5rem; }
+  .st-key-chat_header [data-testid="stHorizontalBlock"] { flex-wrap: nowrap; }
+  .st-key-chat_header [data-testid="stColumn"] { min-width: 0; }
+}
+@media (max-height: 600px) {
+  .welcome { padding-top: .5rem; }
+  .welcome-mark, .welcome-eyebrow { display: none; }
+  .sidebar-brand { padding-bottom: .3rem; }
+}
