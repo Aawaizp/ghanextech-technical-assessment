@@ -2,6 +2,8 @@
 
 Task 2 of the Ghanex Tech assessment: a Streamlit assistant using Groq's native tool calling.
 
+[Live app](https://ghanextech-technical-assessment-2h5qjjcnhjdd4djmipvh5g.streamlit.app/)
+
 ## Run locally
 
 Use Python 3.11. From this folder in PowerShell:
@@ -117,7 +119,7 @@ They do not guarantee every model-generated answer is correct.
 
 ### Assessment verification (November 21, 2026)
 
-52 offline tests pass, covering tools, schemas, rate-limit fallback, connection
+59 offline tests pass, covering tools, schemas, rate-limit fallback, connection
 errors, call limits, malformed arguments and independent conversation history.
 UI checks include a 30-chat history, searching, renaming, switching and deletion.
 
@@ -137,7 +139,7 @@ future model response.
 | Synthesis and graceful failures | Live combined answer includes calculator error without losing other results |
 | Modular source and configuration | Separate UI, conversation store, agent, registry and tools; .env.example |
 | README | Setup, schemas, architecture, examples and limitations documented |
-| Public deployment | Pending Task 2 deployment and incognito verification |
+| Public deployment | Deployment URL recorded; incognito access and hosted tool checks pending |
 
 The layout uses a compact welcome screen, a separately scrolling history list,
 sticky navigation/header styling, and popovers for secondary controls. Automated
@@ -146,10 +148,16 @@ is still needed because the available preview returned the wrong window.
 
 ## Deployment
 
-Task 2 still needs its own public deployment. In Streamlit Community Cloud,
-select this repository and task-2-agent/app.py as the entry point, Python 3.11,
-and configure GROQ_API_KEY_1 in app secrets. Verify the public link in an
-incognito window and test tools before adding the URL to the submission.
+The deployment URL is linked above. To reproduce the deployment in Streamlit
+Community Cloud, select this repository and task-2-agent/app.py as the entry
+point, Python 3.11, and configure GROQ_API_KEY_1 in app secrets. Verify public
+access in an incognito window and test tools on the hosted app before submission.
+
+Weather errors identify location lookup versus forecast retrieval and distinguish
+HTTP errors (including 403 and 429), timeouts, connection and TLS failures. Temporary
+connection failures, timeouts and HTTP 502/503/504 receive one retry; access denials
+and rate limits are not retried. Safe diagnostic lines appear in Streamlit logs.
+A successful local request does not establish connectivity from Community Cloud.
 
 ## API references
 

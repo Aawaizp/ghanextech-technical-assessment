@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta
 import math
+import logging
+import time
 from urllib.parse import urlencode
 
 import requests
@@ -11,6 +13,11 @@ import requests
 
 GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
+logger = logging.getLogger(__name__)
+REQUEST_HEADERS = {
+    "User-Agent": "GhanexAssessmentAgent/1.0 (https://github.com/Aawaizp/ghanextech-technical-assessment)",
+    "Accept": "application/json",
+}
 WEATHER_CODES = {
     0: "clear sky",
     1: "mainly clear",
@@ -49,13 +56,48 @@ class WeatherError(RuntimeError):
 
 
 def _get_json(http: requests.Session, url: str, params: dict) -> dict:
-    response = http.get(url, params=params, timeout=10)
-    response.raise_for_status()
-    payload = response.json()
+    stage = "location lookup" if url == GEOCODING_URL else "forecast"
+    for attempt in range(2):
+        try:
+            response = http.get(url, params=params, timeout=(5, 10), headers=REQUEST_HEADERS)
+            response.raise_for_status()
+            break
+        except requests.HTTPError as exc:
+            status = exc.response.status_code if exc.response is not None else response.status_code
+            logger.warning("Open-Meteo %s failed: HTTP %s (attempt %s)", stage, status, attempt + 1)
+            if status in (502, 503, 504) and attempt == 0:
+                time.sleep(0.5)
+                continue
+            if status == 429:
+                detail = "rate limit reached (HTTP 429). Please wait before retrying"
+            elif status in (401, 403):
+                detail = f"access denied (HTTP {status}) from this app's server"
+            elif status == 400:
+                detail = "request rejected (HTTP 400). The weather request needs checking"
+            else:
+                detail = f"service returned HTTP {status}; please retry later"
+            raise WeatherError(f"Open-Meteo {stage}: {detail}") from exc
+        except requests.exceptions.SSLError as exc:
+            logger.warning("Open-Meteo %s failed: TLS verification", stage)
+            raise WeatherError(f"Open-Meteo {stage}: secure connection could not be verified") from exc
+        except (requests.Timeout, requests.ConnectionError) as exc:
+            kind = "timed out" if isinstance(exc, requests.Timeout) else "connection failed"
+            logger.warning("Open-Meteo %s %s (attempt %s)", stage, kind, attempt + 1)
+            if attempt == 0:
+                time.sleep(0.5)
+                continue
+            raise WeatherError(f"Open-Meteo {stage}: {kind} after one retry; please try later") from exc
+        except requests.RequestException as exc:
+            logger.warning("Open-Meteo %s failed: %s", stage, type(exc).__name__)
+            raise WeatherError(f"Open-Meteo {stage}: network request failed; please retry") from exc
+    try:
+        payload = response.json()
+    except ValueError as exc:
+        raise WeatherError(f"Open-Meteo {stage}: service returned invalid JSON") from exc
     if not isinstance(payload, dict):
-        raise WeatherError("Weather service returned an invalid response")
+        raise WeatherError(f"Open-Meteo {stage}: service returned an invalid response")
     if payload.get("error"):
-        raise WeatherError("Weather service could not process this location; please retry")
+        raise WeatherError(f"Open-Meteo {stage}: service could not process the request")
     return payload
 
 
