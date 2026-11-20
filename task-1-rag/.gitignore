@@ -3,10 +3,14 @@
 
 # Environment Variables
 .env
+.env.*
+!.env.example
+secrets.toml
 
 # Python Cache
 __pycache__/
 *.pyc
+*.log
 
 # Chroma Database
 chroma_db/

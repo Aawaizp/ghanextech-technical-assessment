@@ -1,0 +1,11 @@
+# Local credentials and generated files for all assessment tasks.
+.env
+.env.*
+!.env.example
+secrets.toml
+.venv/
+__pycache__/
+*.py[cod]
+*.log
+chroma_db/
+uploaded_pdfs/

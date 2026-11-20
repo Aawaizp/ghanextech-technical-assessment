@@ -40,11 +40,11 @@ passage numbers have been checked, then displayed with the source passages.
 
 ## Run locally
 
-From the repository root, open `task-1-rag` and use Python 3.11
-(Python 3.10+ is the assessment minimum):
+Open the folder containing `app.py` and `requirements.txt`: `task-1-rag` in the
+assessment repository, or `Desktop/doctok` in the original working copy.
+Use Python 3.11 (Python 3.10+ is the assessment minimum):
 
 ```bash
-cd task-1-rag
 python -m venv .venv
 # Windows
 .venv\Scripts\activate
@@ -100,11 +100,19 @@ not yet been verified.
 
 ## Deployment
 
-The Streamlit app entry point is `task-1-rag/app.py` from the assessment
-repository root. Configure `GROQ_API_KEY_1` in the hosting provider's secrets
-settings and point the app to this subdirectory. Deployment must be verified
-after the assessment repository is published; no public demo URL is available
-yet.
+In Streamlit Community Cloud, select the assessment repository, its `main`
+branch, and `task-1-rag/app.py` as the entry point. Choose Python 3.11 in Advanced
+settings and add your key to the Secrets field in TOML format:
+
+```toml
+GROQ_API_KEY_1 = "your_groq_api_key"
+```
+
+The repository-root `.streamlit/config.toml` supplies the theme and upload limit
+when the app runs from the repository root. The app folder has the same config
+for running locally from that folder. Dependencies are in
+`task-1-rag/requirements.txt`. A public demo URL will be added after deployment
+is verified.
 
 ## Limitations
 
