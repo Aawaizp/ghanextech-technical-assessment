@@ -100,6 +100,8 @@ not yet been verified.
 
 ## Deployment
 
+**Live demo:** [Ghanex PDF assistant](https://ghanextech-technical-assessment-anslrabcywwrbm4mm9tpqz.streamlit.app/)
+
 In Streamlit Community Cloud, select the assessment repository, its `main`
 branch, and `task-1-rag/app.py` as the entry point. Choose Python 3.11 in Advanced
 settings and add your key to the Secrets field in TOML format:
@@ -111,8 +113,7 @@ GROQ_API_KEY_1 = "your_groq_api_key"
 The repository-root `.streamlit/config.toml` supplies the theme and upload limit
 when the app runs from the repository root. The app folder has the same config
 for running locally from that folder. Dependencies are in
-`task-1-rag/requirements.txt`. A public demo URL will be added after deployment
-is verified.
+`task-1-rag/requirements.txt`.
 
 ## Limitations
 
