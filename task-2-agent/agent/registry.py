@@ -8,7 +8,7 @@ import re
 from .tools.calculator import calculate
 from .tools.currency import convert_currency
 from .tools.knowledge import search_knowledge
-from .tools.weather import get_weather
+from .tools.weather_cache import get_cached_weather
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,7 @@ TOOL_SCHEMAS = [
     ),
 ]
 TOOL_FUNCTIONS = {
-    "calculate": calculate, "get_weather": get_weather,
+    "calculate": calculate, "get_weather": get_cached_weather,
     "search_knowledge": search_knowledge, "convert_currency": convert_currency,
 }
 PARAMETERS = {item["function"]["name"]: item["function"]["parameters"] for item in TOOL_SCHEMAS}

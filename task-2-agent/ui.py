@@ -51,6 +51,13 @@ def render_tool_activity(trace):
                 status += " · reused result"
             st.markdown(f"**{name}**")
             st.caption(status)
+            if call["name"] == "get_weather" and ok:
+                data = call["result"].get("data", {})
+                cache = data.get("cache", {})
+                if cache.get("hit"):
+                    st.caption(f"Cached weather · {cache['age_seconds']} seconds old")
+                if data.get("fetched_at_utc"):
+                    st.caption(f"Fetched at {data['fetched_at_utc']} (UTC)")
             if not ok:
                 st.caption(call["result"].get("error", "The tool returned an error."))
             st.code(json.dumps({

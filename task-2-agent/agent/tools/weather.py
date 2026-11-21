@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 import math
 import logging
 import time
@@ -55,6 +56,23 @@ class WeatherError(RuntimeError):
     pass
 
 
+class WeatherRateLimit(WeatherError):
+    def __init__(self, message, retry_after=300):
+        super().__init__(message)
+        self.retry_after = retry_after
+
+
+def retry_delay(value):
+    """Honor Retry-After seconds or an HTTP date; otherwise wait five minutes."""
+    try:
+        if str(value).isdigit():
+            return max(1, int(value))
+        target = parsedate_to_datetime(value)
+        return max(1, math.ceil((target - datetime.now(timezone.utc)).total_seconds()))
+    except (ValueError, TypeError, OverflowError):
+        return 300
+
+
 def _get_json(http: requests.Session, url: str, params: dict) -> dict:
     stage = "location lookup" if url == GEOCODING_URL else "forecast"
     for attempt in range(2):
@@ -69,7 +87,10 @@ def _get_json(http: requests.Session, url: str, params: dict) -> dict:
                 time.sleep(0.5)
                 continue
             if status == 429:
-                detail = "rate limit reached (HTTP 429). Please wait before retrying"
+                raise WeatherRateLimit(
+                    f"Open-Meteo {stage}: rate limit reached (HTTP 429). Please wait before retrying",
+                    retry_delay(response.headers.get("Retry-After")),
+                ) from exc
             elif status in (401, 403):
                 detail = f"access denied (HTTP {status}) from this app's server"
             elif status == 400:

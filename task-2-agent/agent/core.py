@@ -23,6 +23,9 @@ first, then calculate with that value. Division by zero is undefined, not infini
 Before answering, check that each requested action has a tool result or a clearly
 reported limitation. Do not silently perform requested arithmetic yourself.
 For actual weather or forecasts, call get_weather each turn, including follow-ups.
+The weather tool may reuse a result for up to five minutes. If cache.hit is true,
+say it is cached and include current.time; do not describe it as freshly fetched.
+If a tool reports a rate limit or cooldown, explain it and do not repeat the call.
 Infer the place from conversation when possible. Match forecast entries by their
 date to tomorrow_date or day_after_tomorrow_date. Never select by array index:
 the first daily forecast may still be yesterday around midnight. Use current.time

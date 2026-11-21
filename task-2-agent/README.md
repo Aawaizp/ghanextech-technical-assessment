@@ -119,7 +119,7 @@ They do not guarantee every model-generated answer is correct.
 
 ### Assessment verification (November 21, 2026)
 
-59 offline tests pass, covering tools, schemas, rate-limit fallback, connection
+65 offline tests pass, covering weather cache expiry and cooldown, tools, schemas, rate-limit fallback, connection
 errors, call limits, malformed arguments and independent conversation history.
 UI checks include a 30-chat history, searching, renaming, switching and deletion.
 
@@ -158,6 +158,16 @@ HTTP errors (including 403 and 429), timeouts, connection and TLS failures. Temp
 connection failures, timeouts and HTTP 502/503/504 receive one retry; access denials
 and rate limits are not retried. Safe diagnostic lines appear in Streamlit logs.
 A successful local request does not establish connectivity from Community Cloud.
+
+Successful weather results are cached for five minutes (at most 64 locations per
+server process). Public weather data is shared across sessions; chat history is
+not. Results expose their fetch timestamp, cache age and observation time. Expired
+data is never served as current weather. After HTTP 429, uncached weather requests
+pause process-wide for Retry-After, or five minutes if the header is absent or
+invalid. Fresh cache entries can still be used during that pause. The cooldown
+does not guarantee that the provider's limit will have reset when it ends.
+The cache and cooldown reset when the server restarts and are not shared across
+multiple server processes. They reduce requests; they do not bypass rate limits.
 
 ## API references
 
