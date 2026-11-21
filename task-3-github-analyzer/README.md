@@ -60,30 +60,28 @@ Ollama application and models on your computer are untouched.
 
 Run `python -B -m unittest discover -s tests -v`. Tests use mocked services.
 Offline tests passed locally. Generated reports use a bounded source sample and
-must be reviewed before acting on recommendations. Deployment and the open-source
-contribution are still pending.
+must be reviewed before acting on recommendations. The deployed app and public
+open-source pull request are listed below; the pull request is awaiting review.
 
-## Deployment preparation
+## Deployment
 
-After live verification and pushing the Task 3 files, configure the deployment:
+**Live app:** [Ghanex Repository Analyzer](https://ghanextech-technical-assessment-epu2pj3tsekut5rtz5yizj.streamlit.app/)
 
-- Repository: `Aawaizp/ghanextech-technical-assessment`
-- Branch: `main` (ensure it contains the Task 3 files)
-- Entry point: `task-3-github-analyzer/app.py`
-- Python: `3.11`
-- Dependencies: `task-3-github-analyzer/requirements.txt`
+The Streamlit deployment uses the public assessment repository, its `main`
+branch, and `task-3-github-analyzer/app.py` as the entry point. Python is 3.11;
+dependencies are listed in `requirements.txt`.
 
-Set secrets in the hosting dashboard, not Git:
+Configure secrets in the hosting dashboard, not Git:
 
 ```toml
 GROQ_API_KEY_1 = "replace-with-your-key"
 GITHUB_TOKEN = "optional-public-repository-token"
 ```
 
-Before submission, check the public URL in a signed-out browser. Inspect a public
+For a smoke check, open the public app while signed out, inspect a public
 repository, generate a report, inspect its sources and download the JSON. Confirm
-invalid input produces a notice. Avoid repeatedly generating reports while limits
-are low. Record the real deployment URL once these checks pass.
+invalid input produces a notice. Avoid repeated report generation while model
+limits are low.
 
 ## Limits and contribution work
 
@@ -99,9 +97,14 @@ project. Read its full README, contribution instructions and AI-use policy; veri
 real need and check for duplicates before submitting. An analyzer suggestion alone
 is not a verified bug. This application does not submit issues or pull requests.
 
-Still required: target repository link, public contribution link, a brief account
-of the verified problem/change, and the deployed analyzer URL. Do not describe
-an unsubmitted proposal as a completed contribution.
+**Target repository:** [streamlit/docs](https://github.com/streamlit/docs)
+
+**Contribution:** [PR #1636 — clarify widget behavior after key deletion](https://github.com/streamlit/docs/pull/1636)
+
+The documentation change explains that deleting a widget key from Session State
+does not reset the value held by the existing frontend widget, and that the key
+may remain absent during that script run. The pull request is public and awaiting
+maintainer review; it has not been merged yet. It addresses [issue #1489](https://github.com/streamlit/docs/issues/1489).
 
 Developed with AI assistance. Review and understand the implementation before
 submitting the assessment.
