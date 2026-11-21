@@ -130,6 +130,13 @@ place the model asked for clarification; a direct weather-tool check returned a
 clear location-not-found error. These are sample checks, not a guarantee of every
 future model response.
 
+The user also verified the deployed app and supplied its tool trace: weather
+returned a valid 120-second-old cache entry; the calculator doubled the returned
+27.8 degrees Celsius to 55.6; currency conversion returned a dated USD/INR rate;
+and a separate 1/0 calculation returned a handled error. Hosted forecasts used
+the correct tomorrow and day-after-tomorrow dates. This confirms the deployed
+multi-tool workflow after adding weather caching and cooldown handling.
+
 | Task 2 requirement | Evidence / status |
 | --- | --- |
 | Multi-turn chat and memory | Session conversations with isolated context; navigation tests pass |
@@ -139,12 +146,13 @@ future model response.
 | Synthesis and graceful failures | Live combined answer includes calculator error without losing other results |
 | Modular source and configuration | Separate UI, conversation store, agent, registry and tools; .env.example |
 | README | Setup, schemas, architecture, examples and limitations documented |
-| Public deployment | Deployment URL recorded; incognito access and hosted tool checks pending |
+| Public deployment | Live URL recorded; user-supplied hosted tool trace passed; signed-out access remains a final submission check |
 
 The layout uses a compact welcome screen, a separately scrolling history list,
-sticky navigation/header styling, and popovers for secondary controls. Automated
-UI checks validate behavior, not pixel alignment. Desktop/mobile visual review
-is still needed because the available preview returned the wrong window.
+a sticky conversation header, and popovers for secondary controls. Desktop
+layout corrections were based on user screenshots and feedback. Automated UI
+checks validate behavior, not pixel alignment; mobile visual review has not been
+independently completed.
 
 ## Deployment
 
